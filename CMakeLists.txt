@@ -37,6 +37,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}/
 )
 
+install(DIRECTORY systemd
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(cmake/allegro_apiConfig.cmake.in
