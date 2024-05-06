@@ -93,11 +93,11 @@ int main(int argc, char** argv)
       "allegro_api [-l] <can_interface>\n" <<
       "allegro_api [-ipv] [-d new_device_id] <can_interface> [<device_id>]");
     INFO("Options:");
-    INFO("  -l\t\tList devices");
-    INFO("  -i\t\tPrint device info");
-    INFO("  -p\t\tPrint joint positions");
-    INFO("  -v\t\tPrint joint velocities");
-    INFO("  -d\tid\tSet device id");
+    INFO("  -l \t\tList devices");
+    INFO("  -i \t\tPrint device info");
+    INFO("  -p \t\tPrint joint positions");
+    INFO("  -v \t\tPrint joint velocities");
+    INFO("  -d id\t\tSet device id");
     return 1;
   }
 
