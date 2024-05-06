@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Touchlab Limited. All Rights Reserved
+// Copyright (c) 2024 Touchlab Limited. All Rights Reserved
 // Unauthorized copying or modifications of this file, via any medium is strictly prohibited.
 
 #include <signal.h>
@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <thread>
 
 #include <allegro_api/allegro_api.hpp>
 

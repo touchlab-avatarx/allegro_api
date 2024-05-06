@@ -7,7 +7,7 @@ add_compile_options(-std=c++17)
 
 find_package(Threads REQUIRED)
 
-add_library(${PROJECT_NAME} SHARED src/allegro_api.cpp)
+add_library(${PROJECT_NAME} SHARED src/allegro_api.cpp src/allegro_api_implementation.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 target_include_directories(${PROJECT_NAME} PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
