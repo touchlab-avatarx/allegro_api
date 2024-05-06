@@ -121,7 +121,7 @@ int main(int argc, char** argv)
         {
           AllegroHand hand;
           hand.init(port, device_id);
-          INFO("CAN port " << port);
+          INFO("CAN port: " << port);
           INFO("Device ID: " << (int)device_id);
           if (hand.get_hand_version() == "00")
           {
