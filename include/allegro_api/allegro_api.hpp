@@ -22,7 +22,6 @@ public:
   bool get_state(std::vector<double>& measured_position,
                  std::vector<double>& measured_velocity,
                  std::chrono::duration<long double> timeout = std::chrono::seconds(-1));
-  void get_velocity(std::vector<double>& measured_velocity);
   void set_torque(const std::vector<double>& torque);
   void get_imu(std::vector<double>& quaternion);
   std::string get_serial();
