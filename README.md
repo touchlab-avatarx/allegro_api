@@ -13,13 +13,19 @@ BitRate=1000K
 RestartSec=100ms
 ```
 
+After setting up CAN interface, restart networking
+
+```
+sudo systemctl restart systemd-networkd.service
+```
+
 ### CLI interface
 
 You can use the CLI tool to test and configure the Allegro hand.
 Usage:
 ```
-allegro_api [-l] <can_interface>
-allegro_api [-ipv] [-d new_device_id] <can_interface> [<device_id>]
+allegro_cli [-l] <can_interface>
+allegro_cli [-ipv] [-d new_device_id] <can_interface> [<device_id>]
 ```
 
 Options:
@@ -32,8 +38,8 @@ Options:
 ```
 
 Example
- - List devices: `allegro_api -l can0`
- - Device info: `allegro_api -i can0 0`
- - Print joint positions: `allegro_api -p can0 0`
- - Print joint velocities: `allegro_api -p can0 0`
- - Set chnage device ID from 0 to 2: `allegro_api -d 2 can0 0`
+ - List devices: `allegro_cli -l can0`
+ - Device info: `allegro_cli -i can0 0`
+ - Print joint positions: `allegro_cli -p can0 0`
+ - Print joint velocities: `allegro_cli -v can0 0`
+ - Set change device ID from 0 to 2: `allegro_cli -d 2 can0 0`
