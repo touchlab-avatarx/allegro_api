@@ -80,6 +80,8 @@ public:
   std::mutex set_mutex_;
   std::condition_variable get_condition_;
   bool state_available_;
+  double t0;
+  double dt_;
 };
 
 }  // namespace allegro

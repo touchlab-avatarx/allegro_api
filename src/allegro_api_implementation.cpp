@@ -164,6 +164,8 @@ void AllegroHand::Implementation::init(const std::string& port, int id)
   can_set_period(period_);
   can_servo(true);
 
+  position_get_flag_ = 0;
+
   is_running_ = true;
   main_thread_.reset(new std::thread([&]() {run();}));
 
@@ -229,7 +231,6 @@ void AllegroHand::Implementation::run()
 void AllegroHand::Implementation::update()
 {
   can_frame frame;
-  position_get_flag_ = 0;
   while (is_running_)
   {
     if (can_read(socket_, frame))
@@ -380,6 +381,14 @@ void AllegroHand::Implementation::update()
 
   bool is_state_ready = position_get_flag_ == (0x01 | 0x02 | 0x04 | 0x08);
   if (!is_state_ready) return;
+
+  double t1 =
+    std::chrono::duration<double>(std::chrono::steady_clock::now()
+                        - std::chrono::steady_clock::time_point()).count();
+  dt_ = t1 - t0;  // Unused
+  t0 = t1;
+
+  position_get_flag_ = 0;
 
   // Update state
   {
