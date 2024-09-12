@@ -221,6 +221,8 @@ void AllegroHand::Implementation::get_imu(std::vector<double>& quaternion)
 
 void AllegroHand::Implementation::run()
 {
+  t0_ = std::chrono::duration<double>(std::chrono::steady_clock::now()
+        - std::chrono::steady_clock::time_point()).count();
   while (is_running_)
   {
     update();
@@ -385,8 +387,8 @@ void AllegroHand::Implementation::update()
   double t1 =
     std::chrono::duration<double>(std::chrono::steady_clock::now()
                         - std::chrono::steady_clock::time_point()).count();
-  dt_ = t1 - t0;  // Unused
-  t0 = t1;
+  dt_ = t1 - t0_;  // Unused
+  t0_ = t1;
 
   position_get_flag_ = 0;
 

@@ -12,7 +12,7 @@
 #include <thread>
 #include <vector>
 
-#include <allegro_api/allegro_api.hpp>
+#include "allegro_api/allegro_api.hpp"
 
 #define NUM_OF_FINGERS 4
 #define NUM_OF_JOINTS 4 * NUM_OF_FINGERS
@@ -80,7 +80,7 @@ public:
   std::mutex set_mutex_;
   std::condition_variable get_condition_;
   bool state_available_;
-  double t0;
+  double t0_;
   double dt_;
 };
 
