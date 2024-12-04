@@ -39,6 +39,22 @@ void AllegroHand::set_torque(const std::vector<double>& torque)
   impl_->set_torque(torque);
 }
 
+
+std::vector<std::string> AllegroHand::get_joint_names()
+{
+  return impl_->get_joint_names();
+}
+
+double AllegroHand::get_torque_limit(const std::string& joint_name)
+{
+  return impl_->get_torque_limit(joint_name);
+}
+
+void AllegroHand::set_torque_limit(const std::string& joint_name, double limit)
+{
+  impl_->set_torque_limit(joint_name, limit);
+}
+
 void AllegroHand::get_imu(std::vector<double>& quaternion)
 {
   impl_->get_imu(quaternion);
