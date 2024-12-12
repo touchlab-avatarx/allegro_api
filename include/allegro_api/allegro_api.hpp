@@ -23,6 +23,9 @@ public:
                  std::vector<double>& measured_velocity,
                  std::chrono::duration<long double> timeout = std::chrono::seconds(-1));
   void set_torque(const std::vector<double>& torque);
+  double get_torque_limit(const std::string& joint_name);
+  void set_torque_limit(const std::string& joint_name, double limit);
+  std::vector<std::string> get_joint_names();
   void get_imu(std::vector<double>& quaternion);
   std::string get_serial();
   std::string get_hand_version();

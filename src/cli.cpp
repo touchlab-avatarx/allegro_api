@@ -34,6 +34,7 @@ enum ACTION
   ACTION_SET_ID,
   ACTION_PRINT_POSITION,
   ACTION_PRINT_VELOCITY,
+  ACTION_PRINT_TORQUE_LIMIT,
 };
 
 int main(int argc, char** argv)
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
   bool needs_id = true;
   ACTION action = ACTION_NONE;
 
-  while ((opt = getopt(argc, argv, "lipvd:")) != -1)
+  while ((opt = getopt(argc, argv, "lipvtd:")) != -1)
   {
     num_options++;
     switch (opt)
@@ -71,6 +72,9 @@ int main(int argc, char** argv)
     case 'v':
       action = ACTION_PRINT_VELOCITY;
       break;
+    case 't':
+      action = ACTION_PRINT_TORQUE_LIMIT;
+      break;
     case '?':
       num_options = 0;
       opt = -1;
@@ -91,12 +95,13 @@ int main(int argc, char** argv)
     if (!needs_id && args.size() != 1) INFO("Missing can interface");
     INFO("Usage:\n" <<
       "allegro_api [-l] <can_interface>\n" <<
-      "allegro_api [-ipv] [-d new_device_id] <can_interface> [<device_id>]");
+      "allegro_api [-ipvt] [-d new_device_id] <can_interface> [<device_id>]");
     INFO("Options:");
     INFO("  -l \t\tList devices");
     INFO("  -i \t\tPrint device info");
     INFO("  -p \t\tPrint joint positions");
     INFO("  -v \t\tPrint joint velocities");
+    INFO("  -t \t\tPrint torque limits");
     INFO("  -d id\t\tSet device id");
     return 1;
   }
@@ -209,6 +214,23 @@ int main(int argc, char** argv)
                    std::setw(14) << std::right << position[14] <<
                    std::setw(14) << std::right << position[15]);
               std::this_thread::sleep_for(100ms);
+          }
+        }
+        break;
+      case ACTION_PRINT_TORQUE_LIMIT:
+        {
+          AllegroHand hand;
+          hand.init(port, device_id);
+          std::vector<std::string> joints = hand.get_joint_names();
+          INFO("Joint torque limits (default, max):");
+          for (const auto& joint : joints)
+          {
+            double limit_default = hand.get_torque_limit(joint);
+            hand.set_torque_limit(joint, 1e100);
+            double limit_max = hand.get_torque_limit(joint);
+            INFO(std::setw(10) << std::left << joint <<
+                 std::setw(14) << std::right << limit_default << "Nm" <<
+                 std::setw(14) << std::right << limit_max << "Nm");
           }
         }
         break;

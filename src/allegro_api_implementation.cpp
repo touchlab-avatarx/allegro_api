@@ -52,19 +52,6 @@ using namespace std::chrono_literals;
 #define ID_RTR_TEMPERATURE_3            (ID_RTR_TEMPERATURE+2)
 #define ID_RTR_TEMPERATURE_4            (ID_RTR_TEMPERATURE+3)
 
-// PWM limits
-#define PWM_LIMIT_ROLL 250.0*1.5
-#define PWM_LIMIT_NEAR 450.0*1.5
-#define PWM_LIMIT_MIDDLE 300.0*1.5
-#define PWM_LIMIT_FAR 190.0*1.5
-#define PWM_LIMIT_THUMB_ROLL 350.0*1.5
-#define PWM_LIMIT_THUMB_NEAR 270.0*1.5
-#define PWM_LIMIT_THUMB_MIDDLE 180.0*1.5
-#define PWM_LIMIT_THUMB_FAR 180.0*1.5
-#define PWM_LIMIT_GLOBAL_8V 800.0  // maximum: 1200
-#define PWM_LIMIT_GLOBAL_24V 500.0
-#define PWM_LIMIT_GLOBAL_12V 1200.0
-
 namespace allegro
 {
 
@@ -130,6 +117,24 @@ AllegroHand::Implementation::Implementation() : is_running_(false), socket_(0)
   for (int i = 0; i < NUM_OF_FINGERS; ++i)
     pwm_.push_back({0, 0, 0, 0});
   period_ = { 3, 0, 0 };  // state, imu, temperature (in ms)
+  joints_ = {
+    {"index_0", JOINTNAME_INDEX_0,},
+    {"index_1", JOINTNAME_INDEX_1,},
+    {"index_2", JOINTNAME_INDEX_2,},
+    {"index_3", JOINTNAME_INDEX_3,},
+    {"middle_0", JOINTNAME_MIDDLE_0,},
+    {"middle_1", JOINTNAME_MIDDLE_1,},
+    {"middle_2", JOINTNAME_MIDDLE_2,},
+    {"middle_3", JOINTNAME_MIDDLE_3,},
+    {"pinky_0", JOINTNAME_PINKY_0,},
+    {"pinky_1", JOINTNAME_PINKY_1,},
+    {"pinky_2", JOINTNAME_PINKY_2,},
+    {"pinky_3", JOINTNAME_PINKY_3,},
+    {"thumb_0", JOINTNAME_THUMB_0,},
+    {"thumb_1", JOINTNAME_THUMB_1,},
+    {"thumb_2", JOINTNAME_THUMB_2,},
+    {"thumb_3", JOINTNAME_THUMB_3,},
+  };
 }
 
 AllegroHand::Implementation::~Implementation()
@@ -170,6 +175,40 @@ void AllegroHand::Implementation::init(const std::string& port, int id)
   main_thread_.reset(new std::thread([&]() {run();}));
 
   std::this_thread::sleep_for(0.1s);
+}
+
+std::vector<std::string> AllegroHand::Implementation::get_joint_names()
+{
+  std::vector<std::string> names;
+  names.reserve(joints_.size());
+  for (auto it : joints_)
+  {
+     names.push_back(it.first);
+  }
+  return names;
+}
+
+double AllegroHand::Implementation::get_torque_limit(const std::string& joint_name)
+{
+  auto it = joints_.find(joint_name);
+  if (it != joints_.end())
+  {
+    return  pwm_max_[it->second] / torque_constant_;
+  }
+  throw std::invalid_argument("Invalid joint name \"" + joint_name + "\"");
+}
+
+void AllegroHand::Implementation::set_torque_limit(const std::string& joint_name, double limit)
+{
+  auto it = joints_.find(joint_name);
+  if (it != joints_.end())
+  {
+    pwm_max_[it->second] = std::min(std::max(0.0, limit * torque_constant_), pwm_max_global_);
+  }
+  else
+  {
+    throw std::invalid_argument("Invalid joint name \"" + joint_name + "\"");
+  }
 }
 
 bool AllegroHand::Implementation::get_state(std::vector<double>& measured_position,
@@ -268,33 +307,33 @@ void AllegroHand::Implementation::update()
               // v4
               torque_constant_ = 1200.0;
               input_voltage_ = 12.0;
-              pwm_max_global_ = PWM_LIMIT_GLOBAL_12V;
+              pwm_max_global_ = pwm_limit_global_12v_;
           } else {
               // v3
               torque_constant_ = 800.0;
               input_voltage_ = 8.0;
-              pwm_max_global_ = PWM_LIMIT_GLOBAL_8V;
+              pwm_max_global_ = pwm_limit_global_8v_;
           }
 
-          pwm_max_[JOINTNAME_INDEX_0] = std::min(pwm_max_global_, PWM_LIMIT_ROLL);
-          pwm_max_[JOINTNAME_INDEX_1] = std::min(pwm_max_global_, PWM_LIMIT_NEAR);
-          pwm_max_[JOINTNAME_INDEX_2] = std::min(pwm_max_global_, PWM_LIMIT_MIDDLE);
-          pwm_max_[JOINTNAME_INDEX_3] = std::min(pwm_max_global_, PWM_LIMIT_FAR);
+          pwm_max_[JOINTNAME_INDEX_0] = std::min(pwm_max_global_, pwm_limit_roll_);
+          pwm_max_[JOINTNAME_INDEX_1] = std::min(pwm_max_global_, pwm_limit_near_);
+          pwm_max_[JOINTNAME_INDEX_2] = std::min(pwm_max_global_, pwm_limit_middle_);
+          pwm_max_[JOINTNAME_INDEX_3] = std::min(pwm_max_global_, pwm_limit_far_);
 
-          pwm_max_[JOINTNAME_MIDDLE_0] = std::min(pwm_max_global_, PWM_LIMIT_ROLL);
-          pwm_max_[JOINTNAME_MIDDLE_1] = std::min(pwm_max_global_, PWM_LIMIT_NEAR);
-          pwm_max_[JOINTNAME_MIDDLE_2] = std::min(pwm_max_global_, PWM_LIMIT_MIDDLE);
-          pwm_max_[JOINTNAME_MIDDLE_3] = std::min(pwm_max_global_, PWM_LIMIT_FAR);
+          pwm_max_[JOINTNAME_MIDDLE_0] = std::min(pwm_max_global_, pwm_limit_roll_);
+          pwm_max_[JOINTNAME_MIDDLE_1] = std::min(pwm_max_global_, pwm_limit_near_);
+          pwm_max_[JOINTNAME_MIDDLE_2] = std::min(pwm_max_global_, pwm_limit_middle_);
+          pwm_max_[JOINTNAME_MIDDLE_3] = std::min(pwm_max_global_, pwm_limit_far_);
 
-          pwm_max_[JOINTNAME_PINKY_0] = std::min(pwm_max_global_, PWM_LIMIT_ROLL);
-          pwm_max_[JOINTNAME_PINKY_1] = std::min(pwm_max_global_, PWM_LIMIT_NEAR);
-          pwm_max_[JOINTNAME_PINKY_2] = std::min(pwm_max_global_, PWM_LIMIT_MIDDLE);
-          pwm_max_[JOINTNAME_PINKY_3] = std::min(pwm_max_global_, PWM_LIMIT_FAR);
+          pwm_max_[JOINTNAME_PINKY_0] = std::min(pwm_max_global_, pwm_limit_roll_);
+          pwm_max_[JOINTNAME_PINKY_1] = std::min(pwm_max_global_, pwm_limit_near_);
+          pwm_max_[JOINTNAME_PINKY_2] = std::min(pwm_max_global_, pwm_limit_middle_);
+          pwm_max_[JOINTNAME_PINKY_3] = std::min(pwm_max_global_, pwm_limit_far_);
 
-          pwm_max_[JOINTNAME_THUMB_0] = std::min(pwm_max_global_, PWM_LIMIT_THUMB_ROLL);
-          pwm_max_[JOINTNAME_THUMB_1] = std::min(pwm_max_global_, PWM_LIMIT_THUMB_NEAR);
-          pwm_max_[JOINTNAME_THUMB_2] = std::min(pwm_max_global_, PWM_LIMIT_THUMB_MIDDLE);
-          pwm_max_[JOINTNAME_THUMB_3] = std::min(pwm_max_global_, PWM_LIMIT_THUMB_FAR);
+          pwm_max_[JOINTNAME_THUMB_0] = std::min(pwm_max_global_, pwm_limit_thumb_roll_);
+          pwm_max_[JOINTNAME_THUMB_1] = std::min(pwm_max_global_, pwm_limit_thumb_near_);
+          pwm_max_[JOINTNAME_THUMB_2] = std::min(pwm_max_global_, pwm_limit_thumb_middle_);
+          pwm_max_[JOINTNAME_THUMB_3] = std::min(pwm_max_global_, pwm_limit_thumb_far_);
           guard.unlock();
           break;
         }

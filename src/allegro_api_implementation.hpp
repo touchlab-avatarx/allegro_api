@@ -6,6 +6,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -32,6 +33,9 @@ public:
   void get_velocity(std::vector<double>& measured_velocity);
   void set_torque(const std::vector<double>& torque);
   void get_imu(std::vector<double>& quaternion);
+  double get_torque_limit(const std::string& joint_name);
+  void set_torque_limit(const std::string& joint_name, double limit);
+  std::vector<std::string> get_joint_names();
   void run();
   void update();
   void init_can();
@@ -71,6 +75,7 @@ public:
   std::vector<int> motor_direction_;
   std::vector<std::vector<int16_t>> pwm_;
   std::vector<int16_t> period_;
+  std::map<std::string, int> joints_;
 
   int socket_;
   int device_id_;
@@ -82,6 +87,18 @@ public:
   bool state_available_;
   double t0_;
   double dt_;
+
+  double pwm_limit_roll_ = 250.0*1.5;
+  double pwm_limit_near_ = 450.0*1.5;
+  double pwm_limit_middle_ = 300.0*1.5;
+  double pwm_limit_far_ = 190.0*1.5;
+  double pwm_limit_thumb_roll_ = 350.0*1.5;
+  double pwm_limit_thumb_near_ = 270.0*1.5;
+  double pwm_limit_thumb_middle_ = 180.0*1.5;
+  double pwm_limit_thumb_far_ = 180.0*1.5;
+  double pwm_limit_global_8v_ = 800.0;  // maximum: 1200
+  double pwm_limit_global_24v_ = 500.0;
+  double pwm_limit_global_12v_ = 1200.0;
 };
 
 }  // namespace allegro
