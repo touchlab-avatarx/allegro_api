@@ -28,7 +28,7 @@
   {#- CSS #}
   {%- for css_file in css_files %}
     {%- if css_file|attr("filename") %}
-      <!-- {{ css_tag(css_file) }} -->
+      {{ css_tag(css_file) }}
       <link rel="stylesheet" type="text/css" href="../common/{{ pathto(css_file.filename, 1)|escape }}" />
     {%- else %}
       <link rel="stylesheet" href="../common/{{ pathto(css_file.filename, 1)|escape }}" type="text/css" />
