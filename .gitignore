@@ -2,6 +2,9 @@
 build/
 install/
 *.log
+docs/doxygen_cpp
+docs/build
+docs/xml
 
 latest
 latest_list
