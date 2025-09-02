@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(allegro_api)
 
-set(ALLEGRO_API_VERSION 0.0.0)
+set(ALLEGRO_API_VERSION 1.0.0)
 
 add_compile_options(-std=c++17)
 

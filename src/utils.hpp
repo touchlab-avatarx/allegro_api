@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Touchlab Limited. All Rights Reserved
+// Copyright (c) 2025 Touchlab Limited. All Rights Reserved
 // Unauthorized copying or modifications of this file, via any medium is strictly prohibited.
 
 #ifndef UTILS_HPP_
