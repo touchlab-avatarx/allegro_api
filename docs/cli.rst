@@ -25,12 +25,12 @@ Options
 Example
 -------
 
-- List devices ::code:`allegro_cli -l can0``
+- List devices ::code:`allegro_cli -l can0`
 
-- Device info ::code:`allegro_cli -i can0 0``
+- Device info ::code:`allegro_cli -i can0 0`
 
-- Print joint positions ::code:`allegro_cli -p can0 0``
+- Print joint positions ::code:`allegro_cli -p can0 0`
 
-- Print joint velocities ::code:`allegro_cli -v can0 0``
+- Print joint velocities ::code:`allegro_cli -v can0 0`
 
-- Change device ID from 0 to 2 ::code:`allegro_cli -d 2 can0 0``
+- Change device ID from 0 to 2 ::code:`allegro_cli -d 2 can0 0`
